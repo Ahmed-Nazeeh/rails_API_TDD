@@ -24,29 +24,29 @@ RSpec.describe Article, type: :model do
 
   describe '#validation' do
     let(:article) { build(:article) }
-# article.valid? == true
+   # article.valid? == true
     it 'should test that factory is valid' do 
       expect(article).to be_valid                 
     end
-# article.title.valid? == true
+   # article.title.valid? == true
     it 'should has a valid title' do   
       article.title = ''
       expect(article).not_to be_valid             
       expect(article.errors[:title]).to include("can't be blank")
     end
-# article.content.valid? == true
+   # article.content.valid? == true
     it 'should has a has valid content' do 
       article.content = ''
       expect(article).not_to be_valid              
       expect(article.errors[:content]).to include("can't be blank")
     end
-# article.slug.valid? == true
+   # article.slug.valid? == true
     it 'should has a has valid slug' do 
       article.slug = ''
       expect(article).not_to be_valid               
       expect(article.errors[:slug]).to include("can't be blank")
     end
-# article.slug.uniq? == true
+   # article.slug.uniq? == true
     # it { should validate_uniqueness_of(:slug) }    #or   test uniqueness
     
     # it { is_expected.to validate_uniqueness_of :slug }    #or  test uniqueness
@@ -57,12 +57,19 @@ RSpec.describe Article, type: :model do
     end
    
   end
-end
 
-class Article < ApplicationRecord
-  validates :title, presence: true
-  validates :content, presence: true
-  validates :slug, presence: true, uniqueness: true
+  describe '.recent' do 
+    it 'returns articles in the correct order' do 
+      older_article = create(:article, created_at: 1.hour.ago)
+      recent_article = create(:article)
+
+      expect(described_class.recent).to eq([recent_article, older_article])
+
+      recent_article.update_column(:created_at, 2.hours.ago)
+
+      expect(described_class.recent).to eq([older_article, recent_article])
+    end
+  end
 end
 
 #Assignment uniquness test solution by instructor
